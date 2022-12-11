@@ -2,14 +2,14 @@
     <div class="wrapper">
         <div class="main">
             <h1>Simple Calculator</h1>
-            <input v-model="currentValue"/>
+            <input v-model="curr"/>
             <div class="row">
-                <simple-button class="btn" description="+" @calculate="calculate" :class="{ active: previousOperator === '+' }"></simple-button>
-                <simple-button class="btn" description="-" @calculate="calculate" :class="{ active: previousOperator === '-' }"></simple-button>
+                <simple-button class="btn" description="+" @calculate="calculate" :class="{ active: sign === '+' }"></simple-button>
+                <simple-button class="btn" description="-" @calculate="calculate" :class="{ active: sign === '-' }"></simple-button>
             </div>
             <div class="row2">
-                <simple-button class="btn" description="*" @calculate="calculate" :class="{ active: previousOperator === '*' }"></simple-button>
-                <simple-button class="btn" description="/" @calculate="calculate" :class="{ active: previousOperator === '/' }"></simple-button>
+                <simple-button class="btn" description="*" @calculate="calculate" :class="{ active: sign === '*' }"></simple-button>
+                <simple-button class="btn" description="/" @calculate="calculate" :class="{ active: sign === '/' }"></simple-button>
             </div>
             <simple-button id="large" class="btn" description="=" @calculate="calculate"></simple-button>
        </div>
@@ -25,30 +25,48 @@ export default {
     },
     data() {
         return {
-            previousValue: 0,
-            currentValue: "",
-            previousOperator: ""
+            prev: null,
+            curr: '',
+            oper: null,
+            sign: '',
+            click: false,
+            end: false
         }
     },
     methods: {
         calculate(description) {
-            if(description === "+" | description === "-" | description === "*" | description === "/") {
-                this.previousValue = parseInt(this.currentValue);
-                this.currentValue = "";
-                this.previousOperator = description;
-            } else if(description === "=") {
-                if(this.previousOperator === "+") {
-                    this.currentValue = this.previousValue + parseInt(this.currentValue);
-                } else if(this.previousOperator === "-") {
-                    this.currentValue = this.previousValue - parseInt(this.currentValue);
-                } else if(this.previousOperator === "*") {
-                    this.currentValue = this.previousValue * parseInt(this.currentValue);
-                } else if(this.previousOperator === "/") {
-                    this.currentValue = this.previousValue / parseInt(this.currentValue);
-                }
-                this.previousOperator = '';
-            } else {
-                console.log("Wrong Description");
+            if(description === '+') {
+                this.oper = (a,b) => a + b;
+                this.prev = this.curr;
+                this.click = true;
+                this.curr = '';
+                this.sign = description;
+            } else if (description === '-') {
+                this.oper = (a,b) => a - b;
+                this.prev = this.curr;
+                this.click = true;
+                this.curr = '';
+                this.sign = description;
+            } else if (description === '*') {
+                this.oper = (a,b) => a * b;
+                this.prev = this.curr;
+                this.click = true;
+                this.curr = '';
+                this.sign = description;
+            } else if (description === '/') {
+                this.oper = (a,b) => a / b;
+                this.prev = this.curr;
+                this.click = true;
+                this.curr = '';
+                this.sign = description;
+            } else if (description === '='){
+                this.curr = this.oper(
+                    parseFloat(this.prev),
+                    parseFloat(this.curr)
+                );
+                this.prev = null;
+                this.sign = '';
+                this.end = true;
             }
         }
     }
